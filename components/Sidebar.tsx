@@ -81,7 +81,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         {/* Logo Section */}
         <div className="p-6 mb-4">
           <Link href="/dashboard" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
+            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg shadow-primary/20">
               <Package className="text-white" size={24} />
             </div>
             <AnimatePresence>
@@ -90,7 +90,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -10 }}
-                  className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400"
+                  className="text-xl font-bold tracking-tight bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400"
                 >
                   StockBondhu
                 </motion.span>
@@ -143,7 +143,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         {/* User & Footer Section */}
         <div className="p-4 border-t border-white/5 space-y-4">
           <div className={cn("flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5", isCollapsed ? "justify-center" : "")}>
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 border border-white/10 flex items-center justify-center shrink-0">
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-700 to-gray-900 border border-white/10 flex items-center justify-center shrink-0">
                <UserIcon size={18} className="text-gray-300" />
             </div>
             {!isCollapsed && (

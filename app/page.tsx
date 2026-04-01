@@ -28,17 +28,17 @@ export default function Home() {
         className="text-center space-y-10 relative z-10"
       >
         <div className="flex flex-col items-center gap-6">
-           <div className="w-24 h-24 rounded-[2.5rem] bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 rotate-[15deg] animate-bounce">
+           <div className="w-24 h-24 rounded-[2.5rem] bg-primary flex items-center justify-center shadow-2xl shadow-primary/40 rotate-15 animate-bounce">
               <Package className="text-white" size={40} />
            </div>
            <div className="space-y-2">
-              <h1 className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-500">
+              <h1 className="text-6xl font-black tracking-tighter bg-clip-text text-transparent bg-linear-to-r from-white to-gray-500">
                 StockBondhu
               </h1>
               <div className="flex items-center justify-center gap-4 text-xs font-black uppercase tracking-[0.5em] text-gray-500">
-                <span className="w-4 h-[1px] bg-gray-500" />
+                <span className="w-4 h-px bg-gray-500" />
                 Next Generation ERP
-                <span className="w-4 h-[1px] bg-gray-500" />
+                <span className="w-4 h-px bg-gray-500" />
               </div>
            </div>
         </div>

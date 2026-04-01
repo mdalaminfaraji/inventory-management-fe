@@ -1,20 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
   Package, 
   Search, 
   Filter, 
-  MoreHorizontal, 
   Edit2, 
   Trash2, 
   AlertTriangle, 
   X,
   Loader2,
   ChevronDown,
-  ArrowUpDown
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -44,6 +44,11 @@ export default function ProductsPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
   // Form states
   const [formData, setFormData] = useState({
     name: '',
@@ -53,17 +58,16 @@ export default function ProductsPage() {
     threshold: 5,
   });
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
       const [productsRes, categoriesRes] = await Promise.all([
-        api.get('/products'),
+        api.get(`/products?page=${page}&limit=8&search=${search}`),
         api.get('/categories')
       ]);
-      setProducts(productsRes.data);
+      setProducts(productsRes.data.products);
+      setTotalPages(productsRes.data.pages);
+      setTotalItems(productsRes.data.total);
       setCategories(categoriesRes.data);
     } catch (error) {
       console.error('Error fetching products:', error);
@@ -71,7 +75,11 @@ export default function ProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, search]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,8 +96,9 @@ export default function ProductsPage() {
       setEditingProduct(null);
       setFormData({ name: '', category: '', price: 0, stock: 0, threshold: 5 });
       fetchData();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Action failed');
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || (error instanceof Error ? error.message : 'Action failed');
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +122,8 @@ export default function ProductsPage() {
         await api.delete(`/products/${id}`);
         toast.success('Product removed');
         fetchData();
-      } catch (error) {
+      } catch (err: unknown) {
+        console.error('Delete error:', err);
         toast.error('Delete failed');
       }
     }
@@ -125,7 +135,7 @@ export default function ProductsPage() {
   );
 
   return (
-    <div className="space-y-8 min-h-[calc(100vh-200px)] flex flex-col font-sans">
+    <div className="space-y-8 min-h-[calc(100vh-200px)] flex flex-col font-sans mb-20">
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="relative group flex-1 max-w-md">
@@ -134,7 +144,7 @@ export default function ProductsPage() {
             type="text"
             placeholder="Search products by name or category..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-white/5 border border-white/5 focus:bg-white/10 focus:border-primary/50 text-gray-200 outline-none transition-all placeholder-gray-500 shadow-2xl"
           />
         </div>
@@ -246,12 +256,6 @@ export default function ProductsPage() {
                     <div className="flex flex-col items-center gap-4 text-gray-500">
                        <Package size={48} className="opacity-20" />
                        <p className="font-medium">No products found matching your search</p>
-                       <button 
-                        onClick={() => setSearch('')}
-                        className="text-primary text-sm font-bold uppercase tracking-widest hover:underline"
-                       >
-                        Clear Filters
-                       </button>
                     </div>
                   </td>
                 </tr>
@@ -259,6 +263,31 @@ export default function ProductsPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Pagination Fix */}
+      <div className="flex items-center justify-between px-8 py-4 bg-white/5 border border-white/5 rounded-[2rem] backdrop-blur-md shadow-2xl">
+         <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-gray-500">
+            Page {page} of {totalPages}
+            <span className="w-1 h-1 rounded-full bg-white/10" />
+            {totalItems} Assets Synced
+         </div>
+         <div className="flex items-center gap-2">
+            <button 
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+              className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white/5 disabled:hover:text-gray-400"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button 
+              disabled={page === totalPages}
+              onClick={() => setPage(p => p + 1)}
+              className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white/5 disabled:hover:text-gray-400"
+            >
+              <ChevronRight size={20} />
+            </button>
+         </div>
       </div>
 
       {/* Product Modal */}
@@ -271,12 +300,11 @@ export default function ProductsPage() {
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               className="relative w-full max-w-2xl bg-white/5 border border-white/10 rounded-[3rem] p-10 shadow-2xl overflow-hidden"
             >
-              {/* Background Glow */}
               <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/20 blur-[100px] rounded-full" />
               
               <div className="flex items-center justify-between mb-10 relative z-10">
                 <div>
-                  <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+                  <h3 className="text-3xl font-bold bg-clip-text text-transparent bg-linear-to-r from-white to-gray-400">
                     {editingProduct ? 'Update Product' : 'Create Product'}
                   </h3>
                   <p className="text-gray-400 mt-2">Enter the details of your inventory item.</p>
@@ -299,7 +327,7 @@ export default function ProductsPage() {
                       placeholder="e.g., iPhone 15 Pro"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold"
                     />
                   </div>
 
@@ -310,7 +338,7 @@ export default function ProductsPage() {
                         required
                         value={formData.category}
                         onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                        className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold"
                       >
                         <option value="" disabled className="bg-[#1a1a1a]">Select category</option>
                         {categories.map((cat) => (
@@ -366,16 +394,16 @@ export default function ProductsPage() {
                   <button
                     type="button"
                     onClick={() => { setIsModalOpen(false); setEditingProduct(null); }}
-                    className="flex-1 px-8 py-5 rounded-2xl bg-white/5 border border-white/5 text-gray-400 font-bold uppercase tracking-widest hover:bg-white/10 transition-all"
+                    className="flex-1 px-8 py-5 rounded-2xl bg-white/5 border border-white/5 text-gray-400 font-bold uppercase tracking-widest hover:bg-white/10 transition-all text-xs"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-[2] px-8 py-5 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-2xl shadow-primary/40 hover:bg-primary/90 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                    className="flex-2 px-8 py-5 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-2xl shadow-primary/40 hover:bg-primary/90 transition-all flex items-center justify-center gap-3 disabled:opacity-50 text-xs"
                   >
-                    {isSubmitting ? <Loader2 className="animate-spin" size={24} /> : (editingProduct ? 'Sync Product' : 'Create Asset')}
+                    {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (editingProduct ? 'Sync Product' : 'Create Asset')}
                   </button>
                 </div>
               </form>

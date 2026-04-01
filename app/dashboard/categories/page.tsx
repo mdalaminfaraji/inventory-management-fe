@@ -193,7 +193,7 @@ export default function CategoriesPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="flex-[2] px-8 py-5 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-2xl shadow-primary/30 hover:bg-primary/90 transition-all flex items-center justify-center text-xs disabled:opacity-50"
+                    className="flex-2 px-8 py-5 rounded-2xl bg-primary text-white font-black uppercase tracking-widest shadow-2xl shadow-primary/40 hover:bg-primary/90 transition-all flex items-center justify-center text-xs disabled:opacity-50"
                   >
                     {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : (editingCategory ? 'Update Class' : 'Create Class')}
                   </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
@@ -14,7 +14,9 @@ import {
   Truck,
   Package,
   ArrowRight,
-  AlertCircle
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -51,28 +53,36 @@ export default function OrdersPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [search, setSearch] = useState('');
 
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+
   // Form states
   const [customerName, setCustomerName] = useState('');
   const [selectedItems, setSelectedItems] = useState<{ productId: string; quantity: number }[]>([]);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
+    setLoading(true);
     try {
       const [ordersRes, productsRes] = await Promise.all([
-        api.get('/orders'),
-        api.get('/products')
+        api.get(`/orders?page=${page}&limit=5&search=${search}`),
+        api.get('/products?limit=100') // Fetch more products for dropdown
       ]);
-      setOrders(ordersRes.data);
-      setProducts(productsRes.data);
+      setOrders(ordersRes.data.orders);
+      setTotalPages(ordersRes.data.pages);
+      setTotalItems(ordersRes.data.total);
+      setProducts(productsRes.data.products);
     } catch (error) {
       toast.error('Failed to load data');
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, search]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleAddItem = () => {
     setSelectedItems([...selectedItems, { productId: '', quantity: 1 }]);
@@ -95,7 +105,6 @@ export default function OrdersPage() {
       return;
     }
 
-    // Conflict Detection: Duplicate products in the same order
     const productIds = selectedItems.map(i => i.productId);
     if (new Set(productIds).size !== productIds.length) {
       toast.error('Duplicate products in the same order.');
@@ -130,11 +139,6 @@ export default function OrdersPage() {
     }
   };
 
-  const filteredOrders = orders.filter(o => 
-    o.customerName.toLowerCase().includes(search.toLowerCase()) ||
-    o._id.toLowerCase().includes(search.toLowerCase())
-  );
-
   const getStatusStyle = (status: string) => {
     switch (status) {
       case 'Pending': return 'bg-amber-400/10 text-amber-400 border border-amber-400/20';
@@ -158,7 +162,7 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="space-y-8 font-sans">
+    <div className="space-y-8 font-sans mb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="relative group flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
@@ -166,7 +170,7 @@ export default function OrdersPage() {
             type="text"
             placeholder="Search orders by customer or ID..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
             className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-white/5 border border-white/5 focus:bg-white/10 focus:border-blue-500/50 text-gray-200 outline-none transition-all placeholder-gray-600 shadow-2xl"
           />
         </div>
@@ -185,8 +189,8 @@ export default function OrdersPage() {
            [...Array(3)].map((_, i) => (
              <div key={i} className="h-48 bg-white/5 rounded-3xl animate-pulse" />
            ))
-         ) : filteredOrders.length > 0 ? (
-           filteredOrders.map((order, i) => (
+         ) : orders.length > 0 ? (
+           orders.map((order, i) => (
              <motion.div
                key={order._id}
                initial={{ opacity: 0, x: -20 }}
@@ -258,10 +262,34 @@ export default function OrdersPage() {
               </div>
               <div>
                 <p className="text-xl font-bold text-gray-500 capitalize">Empty fulfillment records</p>
-                <p className="text-gray-600 text-sm mt-2">Start a new workflow by creating your first order.</p>
               </div>
            </div>
          )}
+      </div>
+
+      {/* Pagination Fix */}
+      <div className="flex items-center justify-between px-8 py-4 bg-white/5 border border-white/5 rounded-[2rem] backdrop-blur-md shadow-2xl">
+         <div className="flex items-center gap-4 text-xs font-black uppercase tracking-widest text-gray-500">
+            Page {page} of {totalPages}
+            <span className="w-1 h-1 rounded-full bg-white/10" />
+            {totalItems} Requests Processed
+         </div>
+         <div className="flex items-center gap-2">
+            <button 
+              disabled={page === 1}
+              onClick={() => setPage(p => p - 1)}
+              className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:bg-blue-500 hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white/5 disabled:hover:text-gray-400"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button 
+              disabled={page === totalPages}
+              onClick={() => setPage(p => p + 1)}
+              className="w-10 h-10 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:bg-blue-500 hover:text-white transition-all disabled:opacity-30 disabled:hover:bg-white/5 disabled:hover:text-gray-400"
+            >
+              <ChevronRight size={20} />
+            </button>
+         </div>
       </div>
 
       <AnimatePresence>
