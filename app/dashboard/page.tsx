@@ -179,7 +179,7 @@ export default function DashboardPage() {
                 <div key={p._id} className="p-4 rounded-2xl bg-white/3 border border-white/5">
                    <p className="text-[10px] font-black uppercase text-gray-500 tracking-widest truncate">{p.name}</p>
                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-lg font-black">{p.stock}</span>
+                      <span className="text-lg font-black text-white">{p.stock}</span>
                       <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", p.stock <= p.threshold ? "bg-red-400/10 text-red-400" : "bg-green-400/10 text-green-400")}>
                         {p.stock <= p.threshold ? 'Low' : 'OK'}
                       </span>
