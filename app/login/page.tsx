@@ -46,9 +46,16 @@ export default function LoginPage() {
   };
 
   const handleDemoLogin = () => {
-    setValue('email', 'admin@example.com');
-    setValue('password', 'password123');
-    toast.info('Demo credentials filled!');
+    setIsLoading(true);
+    try {
+      setValue('email', 'alaminice1617@gmail.com');
+      setValue('password', 'alaminice1617@gmail.com');
+      onSubmit({ email: 'alaminic1617@gmail.com', password: 'alaminice1617@gmail.com' });
+    } catch (error) {
+      toast.error('Login failed');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
