@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useState } from 'react';
@@ -10,6 +11,9 @@ import * as z from 'zod';
 import api from '@/lib/api';
 import { Toaster, toast } from 'sonner';
 import { UserPlus, LogIn, ArrowRight, Loader2, ShieldCheck } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Controller } from 'react-hook-form';
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -26,6 +30,7 @@ export default function RegisterPage() {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<RegisterFormValues>({
@@ -82,22 +87,22 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300 ml-1">Full Name</label>
-              <input
+              <Input
                 {...register('name')}
                 type="text"
                 placeholder="John Doe"
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="h-12 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus-visible:ring-primary/50 transition-all border-none"
               />
               {errors.name && <p className="text-red-400 text-xs mt-1 ml-1">{errors.name.message}</p>}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300 ml-1">Email Address</label>
-              <input
+              <Input
                 {...register('email')}
                 type="email"
                 placeholder="name@company.com"
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="h-12 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus-visible:ring-primary/50 transition-all border-none"
               />
               {errors.email && <p className="text-red-400 text-xs mt-1 ml-1">{errors.email.message}</p>}
             </div>
@@ -106,24 +111,32 @@ export default function RegisterPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300 ml-1">Password</label>
-              <input
+              <Input
                 {...register('password')}
                 type="password"
                 placeholder="••••••••"
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                className="h-12 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus-visible:ring-primary/50 transition-all border-none"
               />
               {errors.password && <p className="text-red-400 text-xs mt-1 ml-1">{errors.password.message}</p>}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-300 ml-1">Role</label>
-              <select
-                {...register('role')}
-                className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              >
-                <option value="Manager" className="bg-[#1a1a1a]">Manager</option>
-                <option value="Admin" className="bg-[#1a1a1a]">Admin</option>
-              </select>
+              <Controller
+                name="role"
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <SelectTrigger className="!h-12 w-full rounded-xl bg-white/5 border border-white/10 text-white focus:ring-primary/50 border-none">
+                      <SelectValue placeholder="Select a role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Manager">Manager</SelectItem>
+                      <SelectItem value="Admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
               {errors.role && <p className="text-red-400 text-xs mt-1 ml-1">{errors.role.message}</p>}
             </div>
           </div>

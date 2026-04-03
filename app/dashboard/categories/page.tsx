@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import api from '@/lib/api';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 interface Category {
   _id: string;
@@ -171,14 +172,14 @@ export default function CategoriesPage() {
               <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
                 <div className="space-y-2">
                    <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Category Name</label>
-                   <input
+                   <Input
                      required
                      autoFocus
                      type="text"
                      placeholder="e.g., Electronics, Grocery..."
                      value={name}
                      onChange={(e) => setName(e.target.value)}
-                     className="w-full px-6 py-5 rounded-2xl bg-white/5 border border-white/5 focus:bg-white/10 focus:border-primary/50 text-white outline-none transition-all placeholder-gray-700 font-bold text-lg"
+                     className="w-full px-6 py-5 h-14 rounded-2xl bg-white/5 border border-white/5 focus-visible:bg-white/10 focus-visible:border-primary/50 text-white outline-none transition-all placeholder-gray-700 font-bold text-lg border-none"
                    />
                 </div>
 

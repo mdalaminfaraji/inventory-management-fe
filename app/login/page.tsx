@@ -10,6 +10,7 @@ import * as z from 'zod';
 import api from '@/lib/api';
 import { Toaster, toast } from 'sonner';
 import { LogIn, UserPlus, ArrowRight, Loader2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -89,22 +90,22 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300 ml-1">Email Address</label>
-            <input
+            <Input
               {...register('email')}
               type="email"
               placeholder="name@company.com"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="h-12 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus-visible:ring-primary/50 transition-all border-none"
             />
             {errors.email && <p className="text-red-400 text-xs mt-1 ml-1">{errors.email.message}</p>}
           </div>
 
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-300 ml-1">Password</label>
-            <input
+            <Input
               {...register('password')}
               type="password"
               placeholder="••••••••"
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="h-12 px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white placeholder-gray-500 focus-visible:ring-primary/50 transition-all border-none"
             />
             {errors.password && <p className="text-red-400 text-xs mt-1 ml-1">{errors.password.message}</p>}
           </div>

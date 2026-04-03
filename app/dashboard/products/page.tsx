@@ -12,13 +12,14 @@ import {
   AlertTriangle, 
   X,
   Loader2,
-  ChevronDown,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Product {
   _id: string;
@@ -140,12 +141,12 @@ export default function ProductsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="relative group flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
-          <input
+          <Input
             type="text"
             placeholder="Search products by name or category..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-white/5 border border-white/5 focus:bg-white/10 focus:border-primary/50 text-gray-200 outline-none transition-all placeholder-gray-500 shadow-2xl"
+            className="w-full pl-12 pr-4 py-4 h-14 rounded-[1.5rem] bg-white/5 border border-white/5 focus-visible:bg-white/10 focus-visible:border-primary/50 text-gray-200 outline-none transition-all placeholder-gray-500 shadow-2xl border-none"
           />
         </div>
 
@@ -321,55 +322,54 @@ export default function ProductsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Product Name</label>
-                    <input
+                    <Input
                       required
                       type="text"
                       placeholder="e.g., iPhone 15 Pro"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold"
+                      className="w-full px-6 py-4 h-12 rounded-2xl bg-white/5 border border-white/5 text-white placeholder-gray-600 focus-visible:ring-primary/50 transition-all font-bold border-none"
                     />
                   </div>
 
                   <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Category</label>
-                    <div className="relative group">
-                      <select
-                        required
-                        value={formData.category}
-                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                        className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white appearance-none focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold"
-                      >
-                        <option value="" disabled className="bg-[#1a1a1a]">Select category</option>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) => setFormData({ ...formData, category: value })}
+                    >
+                      <SelectTrigger className="w-full px-6 py-4 !h-12 rounded-2xl bg-white/5 border border-white/5 text-white focus:ring-primary/50 transition-all font-bold border-none">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
                         {categories.map((cat) => (
-                          <option key={cat._id} value={cat._id} className="bg-[#1a1a1a]">{cat.name}</option>
+                          <SelectItem className='cursor-pointer' key={cat._id} value={cat._id}>{cat.name}</SelectItem>
                         ))}
-                      </select>
-                      <ChevronDown className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none group-focus-within:rotate-180 transition-transform duration-300" size={18} />
-                    </div>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Stock Level</label>
-                    <input
+                    <Input
                       required
                       type="number"
                       placeholder="0"
                       value={formData.stock}
                       onChange={(e) => setFormData({ ...formData, stock: parseInt(e.target.value) })}
-                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold"
+                      className="w-full px-6 py-4 h-12 rounded-2xl bg-white/5 border border-white/5 text-white focus-visible:ring-primary/50 transition-all font-bold border-none"
                     />
                   </div>
 
                   <div className="space-y-3">
                     <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Threshold Value</label>
-                    <input
+                    <Input
                       required
                       type="number"
                       placeholder="5"
                       value={formData.threshold}
                       onChange={(e) => setFormData({ ...formData, threshold: parseInt(e.target.value) })}
-                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-bold"
+                      className="w-full px-6 py-4 h-12 rounded-2xl bg-white/5 border border-white/5 text-white focus-visible:ring-primary/50 transition-all font-bold border-none"
                     />
                   </div>
                 </div>
@@ -378,14 +378,14 @@ export default function ProductsPage() {
                     <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-1">Unit Price ($)</label>
                     <div className="relative">
                       <div className="absolute left-6 top-1/2 -translate-y-1/2 text-primary font-black">$</div>
-                      <input
+                      <Input
                         required
                         type="number"
                         step="0.01"
                         placeholder="0.00"
                         value={formData.price}
                         onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) })}
-                        className="w-full pl-12 pr-6 py-5 rounded-2xl bg-white/5 border border-white/5 text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-2xl font-black"
+                        className="w-full pl-12 pr-6 py-5 h-16 rounded-2xl bg-white/5 border border-white/5 text-white focus-visible:ring-primary/50 transition-all text-2xl font-black border-none"
                       />
                     </div>
                 </div>

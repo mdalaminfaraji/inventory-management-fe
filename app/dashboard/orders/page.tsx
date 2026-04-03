@@ -21,6 +21,8 @@ import {
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface Product {
   _id: string;
@@ -166,12 +168,12 @@ export default function OrdersPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="relative group flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-          <input
+          <Input
             type="text"
             placeholder="Search orders by customer or ID..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-white/5 border border-white/5 focus:bg-white/10 focus:border-blue-500/50 text-gray-200 outline-none transition-all placeholder-gray-600 shadow-2xl"
+            className="w-full pl-12 pr-4 py-4 h-14 rounded-[1.5rem] bg-white/5 border border-white/5 focus-visible:bg-white/10 focus-visible:border-blue-500/50 text-gray-200 outline-none transition-all placeholder-gray-600 shadow-2xl border-none"
           />
         </div>
 
@@ -319,13 +321,13 @@ export default function OrdersPage() {
               <form onSubmit={handleSubmit} className="space-y-10 relative z-10">
                 <div className="space-y-4">
                   <label className="text-xs font-black uppercase tracking-widest text-gray-400 ml-2">Stakeholder Name</label>
-                  <input
+                  <Input
                     required
                     type="text"
                     placeholder="Enter Customer/Company Name"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full px-8 py-6 rounded-3xl bg-white/3 border border-white/5 focus:bg-white/5 focus:border-blue-500/50 text-white outline-none transition-all placeholder-gray-700 font-bold text-xl shadow-inner shadow-black/50"
+                    className="w-full px-8 py-6 h-16 rounded-3xl bg-white/3 border border-white/5 focus-visible:bg-white/5 focus-visible:border-blue-500/50 text-white outline-none transition-all placeholder-gray-700 font-bold text-xl shadow-inner shadow-black/50 border-none"
                   />
                 </div>
 
@@ -351,32 +353,33 @@ export default function OrdersPage() {
                         >
                            <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4">
                               <div className="md:col-span-3">
-                                 <select
-                                   required
+                                 <Select
                                    value={item.productId}
-                                   onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
-                                   className="w-full bg-transparent text-white outline-none font-bold appearance-none cursor-pointer"
+                                   onValueChange={(value) => handleItemChange(index, 'productId', value)}
                                  >
-                                   <option value="" disabled className="bg-[#1a1a1a]">Choose Product...</option>
-                                   {products.map((p) => (
-                                     <option 
-                                      key={p._id} 
-                                      value={p._id} 
-                                      disabled={p.status === 'Out of Stock'}
-                                      className="bg-[#1a1a1a]"
-                                     >
-                                       {p.name} ({p.stock} available) - ${p.price}
-                                     </option>
-                                   ))}
-                                 </select>
+                                   <SelectTrigger className="w-full bg-transparent text-white outline-none font-bold border-none h-10 px-0 focus:ring-0">
+                                     <SelectValue placeholder="Choose Product..." />
+                                   </SelectTrigger>
+                                   <SelectContent>
+                                     {products.map((p) => (
+                                       <SelectItem 
+                                         key={p._id} 
+                                         value={p._id} 
+                                         disabled={p.status === 'Out of Stock'}
+                                       >
+                                         {p.name} ({p.stock} avail) - ${p.price}
+                                       </SelectItem>
+                                     ))}
+                                   </SelectContent>
+                                 </Select>
                               </div>
-                              <input
+                              <Input
                                 required
                                 type="number"
                                 placeholder="Qty"
                                 value={item.quantity}
                                 onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value))}
-                                className="bg-white/5 px-4 py-2 rounded-xl text-center font-bold text-blue-400 outline-none w-full"
+                                className="bg-white/5 px-4 py-2 h-10 rounded-xl text-center font-bold text-blue-400 outline-none w-full border-none"
                               />
                            </div>
                            <button 

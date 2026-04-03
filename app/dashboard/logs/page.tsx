@@ -16,6 +16,7 @@ import {
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 interface ActivityLog {
   _id: string;
@@ -82,12 +83,12 @@ export default function LogsPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="relative group flex-1 max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" size={18} />
-          <input
+          <Input
             type="text"
             placeholder="Search events by keyword or type..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-12 pr-4 py-4 rounded-[1.5rem] bg-white/5 border border-white/5 focus:bg-white/10 focus:border-primary/50 text-gray-200 outline-none transition-all placeholder-gray-600 shadow-2xl"
+            className="w-full pl-12 pr-4 py-4 h-14 rounded-[1.5rem] bg-white/5 border border-white/5 focus-visible:bg-white/10 focus-visible:border-primary/50 text-gray-200 outline-none transition-all placeholder-gray-600 shadow-2xl border-none"
           />
         </div>
         <div className="flex items-center gap-2">

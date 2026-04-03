@@ -6,16 +6,14 @@ import {
   AlertCircle, 
   ArrowUpCircle, 
   RotateCcw, 
-  Package, 
-  Search, 
   Loader2,
-  Trash2,
   CheckCircle2,
   X
 } from 'lucide-react';
 import api from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { Input } from '@/components/ui/input';
 
 interface Product {
   _id: string;
@@ -201,12 +199,12 @@ export default function RestockQueuePage() {
                           >
                             -
                           </button>
-                          <input 
+                          <Input 
                             required
                             type="number"
                             value={restockAmount}
                             onChange={(e) => setRestockAmount(parseInt(e.target.value))}
-                            className="flex-1 bg-white/5 border border-white/5 h-16 rounded-3xl text-center text-3xl font-black text-primary outline-none focus:bg-white/10 transition-all shadow-inner shadow-black/50"
+                            className="flex-1 bg-white/5 border border-white/5 h-16 rounded-3xl text-center text-3xl font-black text-primary outline-none focus-visible:bg-white/10 transition-all shadow-inner shadow-black/50 border-none px-0"
                           />
                           <button 
                             type="button" 
